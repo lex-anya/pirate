@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>A letter for you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Pirata+One&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#2a1708;
+  --t1:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .27 0 0 0 0 .12 0 0 0 .6 -.22'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  --t2:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.008' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .2 0 0 0 0 .05 0 0 0 2.4 -.95'/%3E%3C/filter%3E%3Crect width='700' height='700' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;background:#000}
+body{height:100dvh;display:grid;place-items:center;font-family:'IM Fell English',Georgia,serif;background:radial-gradient(ellipse at 50% 45%,#150e07 0,#000 72%)}
+.lock *{pointer-events:none}
+.parch{background:linear-gradient(135deg,#cdb27c,#b2915a 55%,#9c7a45);background-size:cover;background-position:center}
+
+/* envelope */
+.env{position:relative;width:min(86vw,360px);aspect-ratio:3/2;cursor:pointer}
+.bodyw{position:absolute;inset:0;filter:drop-shadow(0 10px 16px rgba(0,0,0,.7)) drop-shadow(0 0 40px rgba(140,85,30,.14))}
+.body{position:absolute;inset:0;box-shadow:inset 0 0 26px 5px rgba(45,22,4,.75),inset 0 0 70px 6px rgba(70,35,8,.28)}
+.ring{position:absolute;inset:0;background:radial-gradient(circle at 76% 72%,transparent 15%,rgba(80,45,12,.22) 17%,rgba(80,45,12,.10) 20%,transparent 24%)}
+.folds{position:absolute;inset:0;width:100%;height:100%}
+.flapw{position:absolute;left:0;top:0;width:100%;height:64%;perspective:900px;filter:drop-shadow(0 3px 3px rgba(40,20,0,.55));transition:opacity .35s .75s}
+.flap{width:100%;height:100%;transform-origin:50% 0;transition:transform .95s cubic-bezier(.5,0,.3,1);box-shadow:inset 0 14px 22px -4px rgba(45,22,4,.55)}
+.flap::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(70,38,8,.22),rgba(70,38,8,0) 75%)}
+.env.open .flap{transform:rotateX(180deg)}
+.seal{position:absolute;left:50%;top:64%;width:27%;max-width:100px;aspect-ratio:1;transform:translate(-50%,-50%);filter:drop-shadow(0 3px 3px rgba(0,0,0,.65))}
+.half{position:absolute;inset:0;transition:transform .55s cubic-bezier(.2,.7,.3,1),opacity .5s .5s}
+.half svg{width:100%;height:100%;display:block}
+.hl{clip-path:polygon(0 0,56% 0,47% 28%,55% 52%,46% 76%,52% 100%,0 100%)}
+.hr{clip-path:polygon(56% 0,100% 0,100% 100%,52% 100%,46% 76%,55% 52%,47% 28%)}
+.env.crack .hl{transform:translate(-12%,8%) rotate(-13deg);opacity:0}
+.env.crack .hr{transform:translate(12%,12%) rotate(11deg);opacity:0}
+#hint{position:absolute;top:calc(100% + 30px);left:0;right:0;text-align:center;font-style:italic;font-size:21px;color:#b99a62;opacity:0;transition:opacity 1.4s}
+#hint.on{opacity:1}
+#paper{background:var(--t1),var(--t2),linear-gradient(135deg,#ddc690,#c0a064 55%,#a98547);background-blend-mode:multiply,multiply,normal;background-size:300px 300px,700px 700px,auto}
+
+/* paper */
+#paper{position:fixed;inset:0;display:grid;place-items:center;opacity:0;visibility:hidden;transform:scale(1.06);
+  transition:opacity 1.2s ease,transform 1.6s ease;
+  box-shadow:inset 0 0 110px 34px rgba(30,12,2,.8),inset 0 0 0 3px rgba(15,6,0,.7)}
+#paper.on{opacity:1;visibility:visible;transform:none}
+#paper::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent 49.5%,rgba(60,30,5,.14) 50%,transparent 50.5%),linear-gradient(0deg,transparent 33%,rgba(60,30,5,.1) 33.3%,transparent 33.6%),linear-gradient(0deg,transparent 66.4%,rgba(60,30,5,.1) 66.7%,transparent 67%)}
+.scene{display:none;flex-direction:column;align-items:center;gap:20px;text-align:center;padding:0 8vw;position:relative;z-index:1}
+.scene.show{display:flex;animation:in 1.4s .6s both}
+@keyframes in{from{opacity:0}to{opacity:1}}
+.t{font-style:italic;color:var(--ink);font-size:clamp(22px,6.3vw,31px);line-height:1.28;max-width:17em;text-shadow:0 1px 0 rgba(255,236,190,.45)}
+#cmp{width:min(82vw,340px);height:auto;filter:drop-shadow(0 12px 14px rgba(30,12,0,.55))}
+
+/* coin */
+.coinwrap{position:relative;width:200px;height:200px;perspective:700px;margin-top:-4vh}
+.coin{position:absolute;inset:0;transform-style:preserve-3d;animation:spin 3.4s linear infinite}
+.coin>*{position:absolute;inset:0;border-radius:50%}
+.e{background:linear-gradient(90deg,#4d3207,#8c6414 50%,#4d3207)}
+.f{backface-visibility:hidden;-webkit-backface-visibility:hidden;animation:glint 3.4s linear infinite}
+.fb{animation-delay:-1.7s}
+@keyframes glint{0%{filter:brightness(.95)}12%{filter:brightness(1.3)}25%{filter:brightness(.5)}75%{filter:brightness(.5)}88%{filter:brightness(1.3)}100%{filter:brightness(.95)}}
+.f svg{width:100%;height:100%;display:block}
+.fb{transform:rotateY(180deg) translateZ(5px)}
+#dbg{position:fixed;left:6px;bottom:6px;font:11px monospace;color:#fc6;z-index:9;pointer-events:none;white-space:pre}
+.ff{transform:translateZ(5px)}
+@keyframes spin{from{transform:rotateX(14deg) rotateY(0)}to{transform:rotateX(14deg) rotateY(360deg)}}
+.cs{width:120px;height:14px;border-radius:50%;background:rgba(30,12,0,.4);filter:blur(6px);margin-top:-2px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs id="defs">
+    <linearGradient id="brass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3d67e"/><stop offset=".35" stop-color="#a77a24"/><stop offset=".62" stop-color="#e6c262"/><stop offset="1" stop-color="#5f3f0c"/></linearGradient>
+    <radialGradient id="face" cx="50%" cy="42%" r="62%"><stop offset="0" stop-color="#eddcae"/><stop offset=".68" stop-color="#cdb27a"/><stop offset="1" stop-color="#8a6a3a"/></radialGradient>
+    <radialGradient id="glass" cx="35%" cy="25%" r="75%"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></radialGradient>
+    <filter id="sh"><feDropShadow dx="1" dy="3" stdDeviation="2.4" flood-color="#2a1500" flood-opacity=".55"/></filter>
+    <symbol id="skull" viewBox="0 0 100 100">
+      <path d="M50 7C28 7 15 23 17 43c1 9 6 15 11 19l2 7c1 4 4 6 6 7v10h28V76c2-1 5-3 6-7l2-7c5-4 10-10 11-19C85 23 72 7 50 7Z" fill="currentColor"/>
+      <path d="M29 45c0-7 7-9 14-5 5 3 5 11 0 14-6 3-14 1-14-9ZM71 45c0-7-7-9-14-5-5 3-5 11 0 14 6 3 14 1 14-9Z" fill="var(--hole)"/>
+      <path d="M50 56l-5 11c2 2 4 1 5-1 1 2 3 3 5 1Z" fill="var(--hole)"/>
+      <path d="M38 76v10M44 76v10M50 76v10M56 76v10M62 76v10M35 77h30" stroke="var(--hole)" stroke-width="2" stroke-linecap="round" fill="none"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="env" id="env">
+  <div class="bodyw"><div class="body parch" id="ebody"><div class="ring"></div></div></div>
+  <svg class="folds" viewBox="0 0 340 227" preserveAspectRatio="none" aria-hidden="true">
+    <polygon points="0,0 170,118 0,227" fill="rgba(60,30,5,.10)"/>
+    <polygon points="340,0 170,118 340,227" fill="rgba(60,30,5,.10)"/>
+    <polygon points="0,227 170,104 340,227" fill="rgba(255,235,180,.10)"/>
+    <g fill="none" stroke="rgba(50,25,5,.45)" stroke-width="1.2">
+      <polyline points="0,0 170,118 0,227"/><polyline points="340,0 170,118 340,227"/><polyline points="0,227 170,104 340,227"/>
+    </g>
+  </svg>
+  <div class="flapw"><div class="flap parch" id="eflap"></div></div>
+  <div class="seal"><div class="half hl"></div><div class="half hr"></div></div>
+  <div id="hint">Tap to break the seal</div>
+</div>
+
+<div id="paper" class="parch">
+  <div class="scene" id="compass">
+    <svg id="cmp" viewBox="0 0 300 330" aria-label="Compass"></svg>
+      <circle cx="150" cy="150" r="147" fill="url(#brass)"/>
+      <circle cx="150" cy="150" r="136" fill="none" stroke="#2c1a03" stroke-opacity=".55" stroke-width="2.5"/>
+      <circle cx="150" cy="150" r="141" fill="none" stroke="#fbe9a6" stroke-opacity=".45" stroke-width="1"/>
+      <circle cx="150" cy="150" r="128" fill="url(#face)" stroke="#4a2f08" stroke-width="2"/>
+      <g id="rose"></g>
+      <g id="needle" filter="url(#sh)">
+        <polygon points="150,30 138,150 150,150" fill="#f1d27a"/>
+        <polygon points="150,30 162,150 150,150" fill="#b98626"/>
+        <polygon points="138,150 150,240 162,150" fill="#6e4a10"/>
+        <polygon points="150,150 150,240 162,150" fill="#4f3308"/>
+        <circle cx="150" cy="40" r="3.4" fill="#fff3c0" opacity=".85"/>
+        <circle cx="150" cy="206" r="6" fill="none" stroke="#e3bd5a" stroke-width="2"/>
+        <circle cx="150" cy="150" r="11" fill="url(#brass)" stroke="#3a2505" stroke-width="1.5"/>
+        <circle cx="150" cy="150" r="3.5" fill="#2c1a03"/>
+      </g>
+      <circle cx="150" cy="150" r="128" fill="url(#glass)" pointer-events="none"/>
+    </svg>
+    <p class="t">What do you want most?</p>
+  </div>
+
+  <div class="scene" id="curse">
+    <div class="coinwrap"><div class="coin" id="coin"></div></div>
+    <div class="cs"></div>
+    <p class="t">You best start believing in ghost stories. You’re in one.</p>
+  </div>
+</div>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s),R=Math.PI/180,D=180/Math.PI;
+const N=(n)=>n.toFixed(1);
+
+/* ---------- build visuals ---------- */
+// metal / wax relief filters (height map from luminance -> lighting -> colour ramp)
+const ramp=(r,g,b)=>`<feComponentTransfer in="d" result="g"><feFuncR type="table" tableValues="${r}"/><feFuncG type="table" tableValues="${g}"/><feFuncB type="table" tableValues="${b}"/></feComponentTransfer>`;
+const relief=(id,o)=>`<filter id="${id}" x="-6%" y="-6%" width="112%" height="112%" color-interpolation-filters="sRGB">
+<feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="a"/><feGaussianBlur in="a" stdDeviation="${o.b}" result="bl"/>
+<feTurbulence type="fractalNoise" baseFrequency="${o.nf}" numOctaves="3" seed="4" result="n"/>
+<feComposite in="bl" in2="n" operator="arithmetic" k2="1" k3="${o.na}" result="h"/>
+<feDiffuseLighting in="h" surfaceScale="${o.s}" diffuseConstant="${o.dc}" lighting-color="#fff" result="d"><feDistantLight azimuth="225" elevation="${o.el}"/></feDiffuseLighting>
+<feSpecularLighting in="h" surfaceScale="${o.s}" specularConstant="${o.sc}" specularExponent="${o.e}" lighting-color="${o.sp}" result="s"><feDistantLight azimuth="225" elevation="${o.el}"/></feSpecularLighting>
+${ramp(o.r,o.g,o.bl)}<feComposite in="g" in2="s" operator="arithmetic" k2="1" k3="1" result="m"/><feComposite in="m" in2="SourceAlpha" operator="in"/></filter>`;
+document.querySelector('#defs').insertAdjacentHTML('beforeend',
+ relief('gold',{b:.9,nf:.5,na:.07,s:5,el:50,dc:.8,sc:.7,e:18,sp:'#ffe9a0',r:'.05 .22 .50 .80 1',g:'.03 .13 .31 .54 .80',bl:'0 .02 .05 .14 .36'})+
+ relief('wax',{b:1.7,nf:.35,na:.03,s:7,el:46,dc:.78,sc:1,e:26,sp:'#ffb0a0',r:'.04 .19 .43 .68 .92',g:'0 .01 .03 .07 .22',bl:'0 .01 .02 .05 .16'})+
+ relief('brassR',{b:.8,nf:.4,na:.04,s:5,el:52,dc:.9,sc:.6,e:14,sp:'#ffe9a8',r:'.06 .26 .55 .80 .96',g:'.04 .17 .38 .60 .80',bl:'.01 .04 .10 .24 .45'}));
+
+// wax seal (grey height map: lighter = higher)
+const sp=[];for(let i=0;i<90;i++){const a=i/90*2*Math.PI,r=39+3.2*Math.sin(3*a+.6)+2.4*Math.sin(5*a+1.7)+1.6*Math.sin(8*a+.2)+1*Math.sin(13*a+2);sp.push(N(r*Math.cos(a))+' '+N(r*Math.sin(a)))}
+const bone=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#bbb" stroke-width="5" stroke-linecap="round"/><circle cx="${x1}" cy="${y1}" r="3.6" fill="#bbb"/><circle cx="${x2}" cy="${y2}" r="3.6" fill="#bbb"/>`;
+const sealSVG=`<svg viewBox="-50 -50 100 100"><g filter="url(#wax)">
+<path d="M${sp.join('L')}Z" fill="#5a5a5a"/>
+<circle r="34" fill="#444"/><circle r="34" fill="none" stroke="#c8c8c8" stroke-width="3"/>
+${bone(-19,0,19,30)}${bone(19,0,-19,30)}
+<g style="color:#e4e4e4;--hole:#222"><use href="#skull" x="-21" y="-30" width="42" height="42"/></g></g></svg>`;
+document.querySelectorAll('.half').forEach(h=>h.innerHTML=sealSVG);
+
+// Jack's compass (still dial, only the needle moves)
+(()=>{const cx=150,cy=190;
+ let tk='',sc='',dt='',st='';
+ for(let i=0;i<60;i++){const a=i*6;tk+=`<line x1="${cx}" y1="${cy-117}" x2="${cx}" y2="${cy-122}" stroke="#444" stroke-width="1.6" transform="rotate(${a} ${cx} ${cy})"/>`;
+   if(a%45)dt+=`<line x1="${cx}" y1="${cy-77}" x2="${cx}" y2="${cy-88}" stroke="#1a0f05" stroke-opacity=".85" stroke-width="${a%15?.9:1.5}" transform="rotate(${a} ${cx} ${cy})"/>`} for(let i=0;i<18;i++){const r=110+Math.random()*14,t=Math.random()*6.28,x=cx+r*Math.cos(t),y=cy+r*Math.sin(t),a=t+1.57+(Math.random()-.5)*.5,l=6+Math.random()*16;
+   sc+=`<line x1="${N(x)}" y1="${N(y)}" x2="${N(x+Math.cos(a)*l)}" y2="${N(y+Math.sin(a)*l)}" stroke="${i%2?'#c4c4c4':'#4a4a4a'}" stroke-width=".8"/>`}
+ for(let k=0;k<8;k++){const L=k%2?56:88,w=k%2?4.5:6;st+=`<polygon points="${cx-w},${cy-14} ${cx+w},${cy-14} ${cx},${cy-L}" transform="rotate(${k*45} ${cx} ${cy})"/>`} $('#cmp').innerHTML=`<defs>
+  <clipPath id="dc"><circle cx="${cx}" cy="${cy}" r="104"/></clipPath>
+  <radialGradient id="dg" cx=".5" cy=".42" r=".65"><stop offset="0" stop-color="#f0e4bb"/><stop offset=".7" stop-color="#d4bc86"/><stop offset="1" stop-color="#8f6e3b"/></radialGradient>
+  <radialGradient id="vg" cx=".5" cy=".5" r=".5"><stop offset=".78" stop-color="#1e0c00" stop-opacity="0"/><stop offset="1" stop-color="#1e0c00" stop-opacity=".6"/></radialGradient>
+  <filter id="dm" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".022" numOctaves="4" seed="9"/><feColorMatrix values="0 0 0 0 .38 0 0 0 0 .22 0 0 0 0 .06 0 0 0 2.2 -.9"/></filter>
+ </defs>
+ <g filter="url(#brassR)">
+  <circle cx="${cx}" cy="48" r="15" fill="none" stroke="#b4b4b4" stroke-width="7"/>
+  <rect x="140" y="58" width="20" height="28" fill="#a0a0a0"/>
+  <circle cx="${cx}" cy="${cy}" r="128" fill="#8a8a8a"/><circle cx="${cx}" cy="${cy}" r="122" fill="#a8a8a8"/>
+  <circle cx="${cx}" cy="${cy}" r="108" fill="#4a4a4a"/><circle cx="${cx}" cy="${cy}" r="108" fill="none" stroke="#d2d2d2" stroke-width="3"/>
+  ${tk}${sc}
+ </g>
+ <g clip-path="url(#dc)">
+  <circle cx="${cx}" cy="${cy}" r="104" fill="url(#dg)"/>
+  <rect x="${cx-104}" y="${cy-104}" width="208" height="208" filter="url(#dm)"/>
+  ${dt}
+  <circle cx="${cx}" cy="${cy}" r="88" fill="none" stroke="#1a0f05" stroke-opacity=".85" stroke-width="1.6"/>
+  <circle cx="${cx}" cy="${cy}" r="56" fill="none" stroke="#1a0f05" stroke-opacity=".85" stroke-width="1.2"/>
+  <g fill="#1a0f05" fill-opacity=".88">${st}</g> 
+  <path d="M96 140l16 14 4 18M214 238l-20-8-6-18M180 112l-10 12 6 14" fill="none" stroke="#2a1707" stroke-opacity=".35" stroke-width=".8"/>
+  <circle cx="${cx}" cy="${cy}" r="104" fill="url(#vg)"/>
+ </g>
+ <g id="needle" filter="url(#sh)">
+  <path d="M0-98L8-16 0-24-8-16Z" fill="#7a5410"/><path d="M0-98L-8-16 0-24Z" fill="#f0cf74"/>
+  <rect x="-1.6" y="-16" width="3.2" height="76" fill="#6a470c"/>
+  <circle cy="72" r="10" fill="none" stroke="#c9a040" stroke-width="3"/><circle cy="72" r="3" fill="#8a6414"/>
+  <path d="M0 60l-5 6 5-2 5 2Z" fill="#8a6414"/>
+  <circle r="10" fill="url(#brass)" stroke="#3a2505" stroke-width="1.5"/><circle r="3.2" fill="#2c1a03"/>
+ </g>
+ <circle cx="${cx}" cy="${cy}" r="104" fill="url(#glass)" pointer-events="none"/>`;
+})();
+
+// coin (height map)
+const dots=[...Array(40)].map((_,i)=>{const a=i*9*R;return `<circle cx="${N(100+77*Math.cos(a))}" cy="${N(100+77*Math.sin(a))}" r="3" fill="#cfcfcf"/>`}).join('');
+const face=`<svg viewBox="0 0 200 200" style="overflow:visible"><g filter="url(#gold)">
+<circle cx="100" cy="100" r="98" fill="#9a9a9a"/><circle cx="100" cy="100" r="90" fill="#6a6a6a"/>${dots}
+<circle cx="100" cy="100" r="66" fill="#808080"/><circle cx="100" cy="100" r="66" fill="none" stroke="#d2d2d2" stroke-width="4"/>
+<g style="color:#ececec;--hole:#262626"><use href="#skull" x="47" y="44" width="106" height="106"/></g></g></svg>`;
+let layers='';for(let z=-4;z<=4;z++)layers+=`<div class="e" style="transform:translateZ(${z}px)"></div>`;
+$('#coin').innerHTML=layers+`<div class="f ff">${face}</div><div class="f fb">${face}</div>`;
+
+// aged paper textures (rendered once to canvas, so the bar's phone isn't re-running filters)
+const tex=(w,h,f)=>new Promise(res=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>res(null);
+  i.src='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><filter id="f" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">${f}</filter><rect width="100%" height="100%" filter="url(#f)"/></svg>`)});
+async function paperTex(w,h,seed){
+  const L=await Promise.all([
+   tex(w,h,`<feTurbulence type="fractalNoise" baseFrequency=".035 .05" numOctaves="5" seed="${seed}"/><feDiffuseLighting surfaceScale="1.0" diffuseConstant="1.05" lighting-color="#f0dcae"><feDistantLight azimuth="50" elevation="58"/></feDiffuseLighting>`),
+   tex(w,h,`<feTurbulence type="fractalNoise" baseFrequency=".006 .009" numOctaves="4" seed="${seed+3}"/><feColorMatrix values="0 0 0 0 .40 0 0 0 0 .24 0 0 0 0 .07 0 0 0 2.2 -.9"/>`),
+   tex(w,h,`<feTurbulence type="fractalNoise" baseFrequency=".3" numOctaves="2" seed="${seed+8}"/><feColorMatrix values="0 0 0 0 .33 0 0 0 0 .19 0 0 0 0 .05 0 0 0 24 -18.2"/>`)]);
+  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
+  if(L[0])x.drawImage(L[0],0,0);x.globalCompositeOperation='multiply';
+  if(L[1])x.drawImage(L[1],0,0);if(L[2])x.drawImage(L[2],0,0);
+  return c.toDataURL('image/jpeg',.85);
+}
+paperTex(720,480,5).then(u=>{$('#ebody').style.backgroundImage=`url(${u})`;$('#eflap').style.backgroundImage=`url(${u})`});
+
+// ragged, torn edges via clip-path
+function edge(n,amp,pos){let v=0,o=[];for(let i=0;i<n;i++){v=v*.55+(Math.random()-.5)*amp*1.6;if(Math.random()<.05)v+=amp*1.5;o.push(pos?Math.abs(v):v)}return o}
+(()=>{const n=34,top=edge(n,.9,1),bot=edge(n,.9,1),lef=edge(24,.6,1),rig=edge(24,.6,1);let p=[];
+  top.forEach((v,i)=>p.push(N(i/(n-1)*100)+'% '+N(v)+'%'));
+  rig.forEach((v,i)=>p.push(N(100-v)+'% '+N((i+1)/25*100)+'%'));
+  bot.forEach((v,i)=>p.push(N(100-i/(n-1)*100)+'% '+N(100-v)+'%'));
+  lef.forEach((v,i)=>p.push(N(v)+'% '+N(100-(i+1)/25*100)+'%'));
+  $('#ebody').style.clipPath=`polygon(${p.join(',')})`;
+  // flap: shares the top edge, ragged slanted sides
+  const f=[];top.forEach((v,i)=>f.push(N(i/(n-1)*100)+'% '+N(v/.64)+'%'));
+  const sl=edge(26,.8,0);for(let i=1;i<26;i++){const t=i/26;f.push(N(100-t*50+sl[i])+'% '+N(t*100+sl[i]*.5)+'%')}
+  f.push('50% 100%');
+  for(let i=25;i>=1;i--){const t=i/26;f.push(N(t*50+sl[(i*3)%26])+'% '+N(t*100+sl[(i*3)%26]*.5)+'%')}
+  $('#eflap').style.clipPath=`polygon(${f.join(',')})`;
+})();
+
+/* ---------- geo / heading ---------- */
+const dl=(g,c)=>((g-c)%360+540)%360-180;
+function dest(la,lo,b,d){const q=d/6371000,t=b*R,p1=la*R,l1=lo*R;
+  const p2=Math.asin(Math.sin(p1)*Math.cos(q)+Math.cos(p1)*Math.sin(q)*Math.cos(t));
+  const l2=l1+Math.atan2(Math.sin(t)*Math.sin(q)*Math.cos(p1),Math.cos(q)-Math.sin(p1)*Math.sin(p2));
+  return [p2*D,l2*D]}
+function bearing(a,b){const p1=a[0]*R,p2=b[0]*R,dL=(b[1]-a[1])*R;
+  return (Math.atan2(Math.sin(dL)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dL))*D+360)%360}
+
+let heading=0,gotH=false,src='none',pos=null,tgt=null,wantB=Math.random()*360;
+function onO(e){let h=null,k=null;
+  if(e.webkitCompassHeading!=null){h=e.webkitCompassHeading;k='ios'}
+  else if(e.type==='deviceorientationabsolute'||e.absolute){if(e.alpha!=null){h=(360-e.alpha)%360;k='abs'}}
+  else if(e.alpha!=null&&src!=='abs'&&src!=='ios'){h=(360-e.alpha)%360;k='rel'}
+  if(h==null)return;heading=h;gotH=true;src=k}
+
+// must be called straight from the tap (iOS needs the gesture).
+// Resolves true as soon as location is ALLOWED (it doesn't wait for a GPS fix).
+function ask(){
+  return new Promise(res=>{
+    if(!navigator.geolocation)return res(false);
+    const DO=window.DeviceOrientationEvent;
+    const m=(DO&&typeof DO.requestPermission==='function')?DO.requestPermission().catch(()=>'denied'):Promise.resolve('granted');
+    m.then(s=>{
+      if(s!=='granted')return res(false);
+      addEventListener('deviceorientationabsolute',onO,true);
+      addEventListener('deviceorientation',onO,true);
+      let done=false;const fin=v=>{if(!done){done=true;res(v)}};
+      navigator.geolocation.watchPosition(p=>{
+        pos=[p.coords.latitude,p.coords.longitude];
+        if(!tgt)tgt=dest(pos[0],pos[1],wantB,400+Math.random()*1100); // 400m–1.5km away
+        fin(true);
+      },er=>{if(er&&er.code===1)fin(false)},{enableHighAccuracy:false,maximumAge:60000,timeout:60000});
+      if(navigator.permissions&&navigator.permissions.query)
+        navigator.permissions.query({name:'geolocation'}).then(st=>{
+          if(st.state==='granted')fin(true);
+          st.onchange=()=>{if(st.state==='granted')fin(true);else if(st.state==='denied')fin(false)};
+        }).catch(()=>{});
+    });
+  });
+}
+let na=0,t=0;
+function loop(){
+  requestAnimationFrame(loop);
+  const b=tgt?bearing(pos,tgt):wantB; // until the first fix lands, point the way it will point
+  na+=dl(b-heading,na)*.14;
+  t+=.05;
+  if(DBG)$('#dbg').textContent=`src ${src}  heading ${N(heading)}\nbearing ${N(b)}`;
+  $('#needle').setAttribute('transform',`translate(150 190) rotate(${N(na+Math.sin(t)*1.1)})`);
+}
+
+/* ---------- flow ---------- */
+const env=$('#env');let go=false;
+const ht=setTimeout(()=>$('#hint').classList.add('on'),4000);
+const q=location.search,DBG=q.includes('debug');if(DBG)document.body.insertAdjacentHTML('beforeend','<div id="dbg"></div>');
+env.addEventListener('click',()=>{
+  if(go)return;go=true;clearTimeout(ht);$('#hint').classList.remove('on');
+  const wantCompass=q.includes('curse')?false:q.includes('compass')?true:Math.random()<.7;
+  const prep=(wantCompass?ask():Promise.resolve(false)).catch(()=>false);
+  env.classList.add('crack');
+  Promise.all([prep,new Promise(r=>setTimeout(r,700))]).then(([ok])=>{
+    env.classList.add('open');
+    setTimeout(()=>{
+      $(ok?'#compass':'#curse').classList.add('show');
+      $('#paper').classList.add('on');
+      if(ok)loop();
+      document.body.classList.add('lock');
+    },800);
+  });
+});
+
+// no zooming / scrolling / long-press menus
+['touchmove','gesturestart','gesturechange','dblclick','contextmenu'].forEach(ev=>addEventListener(ev,e=>e.preventDefault(),{passive:false}));
+})();
+</script>
+</body>
+</html>
