@@ -184,10 +184,11 @@ document.querySelectorAll('.half').forEach(h=>h.innerHTML=sealSVG);
  <g clip-path="url(#dc)">
   <circle cx="${cx}" cy="${cy}" r="104" fill="url(#dg)"/>
   <rect x="${cx-104}" y="${cy-104}" width="208" height="208" filter="url(#dm)"/>
-  ${dt}
+  <g id="card">  ${dt}
   <circle cx="${cx}" cy="${cy}" r="88" fill="none" stroke="#1a0f05" stroke-opacity=".85" stroke-width="1.6"/>
   <circle cx="${cx}" cy="${cy}" r="56" fill="none" stroke="#1a0f05" stroke-opacity=".85" stroke-width="1.2"/>
   <g fill="#1a0f05" fill-opacity=".88">${st}</g> 
+  </g>
   <path d="M96 140l16 14 4 18M214 238l-20-8-6-18M180 112l-10 12 6 14" fill="none" stroke="#2a1707" stroke-opacity=".35" stroke-width=".8"/>
   <circle cx="${cx}" cy="${cy}" r="104" fill="url(#vg)"/>
  </g>
@@ -259,37 +260,29 @@ function onO(e){let h=null,k=null;
 
 // must be called straight from the tap (iOS needs the gesture).
 // Resolves true as soon as location is ALLOWED (it doesn't wait for a GPS fix).
+let why='';
 function ask(){
   return new Promise(res=>{
-    if(!navigator.geolocation)return res(false);
     const DO=window.DeviceOrientationEvent;
-    const m=(DO&&typeof DO.requestPermission==='function')?DO.requestPermission().catch(()=>'denied'):Promise.resolve('granted');
+    if(!DO){why='no motion support';return res(false)}
+    const m=(typeof DO.requestPermission==='function')?DO.requestPermission().catch(e=>{why='motion error: '+e;return 'denied'}):Promise.resolve('granted');
     m.then(s=>{
-      if(s!=='granted')return res(false);
+      if(s!=='granted'){why=why||('motion permission: '+s);return res(false)}
       addEventListener('deviceorientationabsolute',onO,true);
       addEventListener('deviceorientation',onO,true);
-      let done=false;const fin=v=>{if(!done){done=true;res(v)}};
-      navigator.geolocation.watchPosition(p=>{
-        pos=[p.coords.latitude,p.coords.longitude];
-        if(!tgt)tgt=dest(pos[0],pos[1],wantB,400+Math.random()*1100); // 400m–1.5km away
-        fin(true);
-      },er=>{if(er&&er.code===1)fin(false)},{enableHighAccuracy:false,maximumAge:60000,timeout:60000});
-      if(navigator.permissions&&navigator.permissions.query)
-        navigator.permissions.query({name:'geolocation'}).then(st=>{
-          if(st.state==='granted')fin(true);
-          st.onchange=()=>{if(st.state==='granted')fin(true);else if(st.state==='denied')fin(false)};
-        }).catch(()=>{});
+      res(true);
     });
   });
 }
-let na=0,t=0;
+let na=0,ra=0,t=0;
 function loop(){
   requestAnimationFrame(loop);
-  const b=tgt?bearing(pos,tgt):wantB; // until the first fix lands, point the way it will point
-  na+=dl(b-heading,na)*.14;
+  const b=wantB;  na+=dl(b-heading,na)*.14;
+  ra+=dl(-heading,ra)*.14;
   t+=.05;
   if(DBG)$('#dbg').textContent=`src ${src}  heading ${N(heading)}\nbearing ${N(b)}`;
   $('#needle').setAttribute('transform',`translate(150 190) rotate(${N(na+Math.sin(t)*1.1)})`);
+  $('#card').setAttribute('transform',`rotate(${N(ra)} 150 190)`);
 }
 
 /* ---------- flow ---------- */
@@ -302,6 +295,7 @@ env.addEventListener('click',()=>{
   const prep=(wantCompass?ask():Promise.resolve(false)).catch(()=>false);
   env.classList.add('crack');
   Promise.all([prep,new Promise(r=>setTimeout(r,700))]).then(([ok])=>{
+    if(!ok&&DBG)alert('compass off: '+why);
     env.classList.add('open');
     setTimeout(()=>{
       $(ok?'#compass':'#curse').classList.add('show');
